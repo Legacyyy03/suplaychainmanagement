@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Supply Chain Product Tracker - Blockchain Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  body {
+    background: #1E1E2F;
+    color: #E0E0E0;
+    font-family: 'Montserrat', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  header {
+    background: linear-gradient(45deg, #0077FF, #00C6FF);
+    width: 100%;
+    padding: 1.5rem;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: white;
+    text-shadow: 0 0 5px #00C6FF;
+  }
+  main {
+    max-width: 900px;
+    width: 100%;
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+  h2 {
+    border-bottom: 2px solid #00C6FF;
+    padding-bottom: 0.3rem;
+    margin-bottom: 1rem;
+    color: #00C6FF;
+  }
+  form {
+    background: #2A2A40;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 20px rgba(0,198,255, 0.3);
+  }
+  label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+  }
+  input[type="text"], select {
+    width: 100%;
+    padding: 0.5rem 0.7rem;
+    border-radius: 5px;
+    border: 1.5px solid #00C6FF;
+    background: #121225;
+    color: #E0E0E0;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    outline-offset: 0px;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus, select:focus {
+    border-color: #00FFFF;
+  }
+  button {
+    background: #00C6FF;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 6px;
+    color: #121225;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background: #009ecc;
+    color: white;
+  }
+  section {
+    margin-bottom: 3rem;
+  }
+  .blocks-container {
+    background: #2A2A40;
+    border-radius: 10px;
+    padding: 1rem;
+    max-height: 360px;
+    overflow-y: auto;
+    box-shadow: 0 0 20px rgba(0,198,255, 0.3);
+  }
+  .block {
+    background: #121225;
+    border: 1px solid #00C6FF;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 0 10px #00BFFF;
+  }
+  .block h4 {
+    margin: 0 0 0.3rem 0;
+    color: #00FFFF;
+  }
+  .block p {
+    margin: 0.2rem 0;
+    font-size: 0.9rem;
+  }
+  .history-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #2A2A40;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: inset 0 0 10px #00C6FF;
+  }
+  .history-item {
+    border-bottom: 1px solid #00C6FF;
+    padding: 0.4rem 0;
+    font-size: 0.9rem;
+  }
+  .history-item:last-child {
+    border-bottom: none;
+  }
+  footer {
+    text-align: center;
+    padding: 1rem;
+    color: #555;
+    font-size: 0.8rem;
+  }
+  .info-box {
+    background: #263147;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: inset 0 0 20px #00C6FF;
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+  @media (max-width: 600px) {
+    main {
+      padding: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+<header>Supply Chain Product Tracker</header>
+<main>
+  <section>
+    <h2>About This Project</h2>
+    <div class="info-box">
+      This simple demo simulates a <strong>blockchain-based supply chain management system</strong>. You can:
+      <ul>
+        <li><strong>Add a new product</strong> into the chain with a unique product ID.</li>
+        <li><strong>Update product status</strong> as it moves through supply chain stages.</li>
+        <li><strong>View product history</strong> which is stored immutably in a blockchain structure.</li>
+      </ul>
+      This helps track products transparently and securely from production to delivery.<br />
+      <br />
+      <strong>How to use:</strong> <br />
+      1. Add a product with an ID and initial status.<br />
+      2. Update its status step by step.<br />
+      3. View its full history anytime.<br />
+      All data stays in browser memory (not stored externally).
+    </div>
+  </section>
+  <section>
+    <h2>Add New Product</h2>
+    <form id="addProductForm">
+      <label for="productIdInput">Product ID (unique):</label>
+      <input type="text" id="productIdInput" required placeholder="e.g. PROD1234" />
+      <label for="productStatusInput">Initial Status:</label>
+      <input type="text" id="productStatusInput" required placeholder="e.g. Manufactured" />
+      <button type="submit">Add Product</button>
+    </form>
+  </section>
+  <section>
+    <h2>Update Product Status</h2>
+    <form id="updateStatusForm">
+      <label for="updateProductIdInput">Product ID:</label>
+      <input type="text" id="updateProductIdInput" required placeholder="e.g. PROD1234" />
+      <label for="newStatusInput">New Status:</label>
+      <input type="text" id="newStatusInput" required placeholder="e.g. Shipped" />
+      <button type="submit">Update Status</button>
+    </form>
+  </section>
+  <section>
+    <h2>View Product History</h2>
+    <form id="viewHistoryForm">
+      <label for="viewProductIdInput">Product ID:</label>
+      <input type="text" id="viewProductIdInput" required placeholder="e.g. PROD1234" />
+      <button type="submit">View History</button>
+    </form>
+    <div id="historyOutput" class="history-list" style="display:none;"></div>
+  </section>
+</main>
+
+<script>
+  // Simple SHA-256 hash function using SubtleCrypto API
+  async function sha256(message) {
+    const msgBuffer = new TextEncoder().encode(message);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  // Blockchain implementation
+  class Block {
+    constructor(index, timestamp, productId, status, previousHash = '') {
+      this.index = index;
+      this.timestamp = timestamp;
+      this.productId = productId;
+      this.status = status;
+      this.previousHash = previousHash;
+      this.hash = '';
+    }
+
+    async calculateHash() {
+      const rawData = this.index + this.timestamp + this.productId + this.status + this.previousHash;
+      this.hash = await sha256(rawData);
+    }
+  }
+
+  class SupplyChainBlockchain {
+    constructor() {
+      this.chain = [];
+    }
+
+    async createGenesisBlock() {
+      const genesisBlock = new Block(0, new Date().toISOString(), 'NONE', 'Genesis Block', '0');
+      await genesisBlock.calculateHash();
+      this.chain.push(genesisBlock);
+    }
+
+    getLatestBlock() {
+      return this.chain[this.chain.length - 1];
+    }
+
+    async addBlock(newBlock) {
+      newBlock.previousHash = this.getLatestBlock().hash;
+      await newBlock.calculateHash();
+      this.chain.push(newBlock);
+    }
+
+    async addProduct(productId, status) {
+      // Check if product already exists
+      if (this.getProductHistory(productId).length > 0) {
+        throw new Error('Product ID already exists.');
+      }
+      const newBlock = new Block(this.chain.length, new Date().toISOString(), productId, status, this.getLatestBlock().hash);
+      await newBlock.calculateHash();
+      this.chain.push(newBlock);
+    }
+
+    async updateProductStatus(productId, status) {
+      // Check if product exists
+      if (this.getProductHistory(productId).length === 0) {
+        throw new Error('Product ID does not exist.');
+      }
+      const newBlock = new Block(this.chain.length, new Date().toISOString(), productId, status, this.getLatestBlock().hash);
+      await newBlock.calculateHash();
+      this.chain.push(newBlock);
+    }
+
+    getProductHistory(productId) {
+      return this.chain.filter(block => block.productId === productId && block.index !== 0);
+    }
+
+    isChainValid() {
+      for(let i = 1; i < this.chain.length; i++) {
+        const currentBlock = this.chain[i];
+        const prevBlock = this.chain[i-1];
+        if(currentBlock.previousHash !== prevBlock.hash) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+
+  // Initialize blockchain with genesis block
+  const blockchain = new SupplyChainBlockchain();
+  blockchain.createGenesisBlock();
+
+  // Form elements
+  const addProductForm = document.getElementById('addProductForm');
+  const updateStatusForm = document.getElementById('updateStatusForm');
+  const viewHistoryForm = document.getElementById('viewHistoryForm');
+  const historyOutput = document.getElementById('historyOutput');
+
+  addProductForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const productId = document.getElementById('productIdInput').value.trim();
+    const status = document.getElementById('productStatusInput').value.trim();
+    if (!productId || !status) return alert('Please fill out all fields.');
+    try {
+      await blockchain.addProduct(productId, status);
+      alert(`Product "${productId}" added with status "${status}".`);
+      addProductForm.reset();
+      historyOutput.style.display = 'none';
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+
+  updateStatusForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const productId = document.getElementById('updateProductIdInput').value.trim();
+    const status = document.getElementById('newStatusInput').value.trim();
+    if (!productId || !status) return alert('Please fill out all fields.');
+    try {
+      await blockchain.updateProductStatus(productId, status);
+      alert(`Product "${productId}" status updated to "${status}".`);
+      updateStatusForm.reset();
+      historyOutput.style.display = 'none';
+    } catch (err) {
+      alert(err.message);
+    }
+  });
+
+  viewHistoryForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const productId = document.getElementById('viewProductIdInput').value.trim();
+    if (!productId) return alert('Please enter a Product ID.');
+    const history = blockchain.getProductHistory(productId);
+    if (history.length === 0) {
+      historyOutput.style.display = 'block';
+      historyOutput.innerHTML = `<p>No history found for Product ID "<strong>${productId}</strong>".</p>`;
+      return;
+    }
+    // Render history
+    let html = `<h3>History for Product ID: <span style="color:#00FFFF;">${productId}</span></h3>`;
+    html += '<ul style="list-style:none; padding-left: 0;">';
+    history.forEach(block => {
+      html += `<li class="history-item">
+        <strong>Status:</strong> ${block.status}<br/>
+        <strong>Timestamp:</strong> ${new Date(block.timestamp).toLocaleString()}<br/>
+        <small><strong>Block Hash:</strong> ${block.hash}</small><br/>
+        <small><strong>Prev Hash:</strong> ${block.previousHash}</small>
+      </li>`;
+    });
+    html += '</ul>';
+    historyOutput.innerHTML = html;
+    historyOutput.style.display = 'block';
+  });
+</script>
+<footer>
+  &copy; #Dewi(102)# #Fachri(104)# #Faza(180)#
+</footer>
+</body>
+</html>
